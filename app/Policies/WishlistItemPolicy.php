@@ -7,18 +7,18 @@ use App\Models\WishlistItem;
 
 class WishlistItemPolicy
 {
-    public function view(User $user, WishlistItem $wishlistItem)
+    public function view(User $user, WishlistItem $item)
     {
-        return $user->id === $wishlistItem->user_id;
+        return $user->id === $item->user_id;
     }
 
-    public function update(User $user, WishlistItem $wishlistItem)
+    public function update(User $user, WishlistItem $item)
     {
-        return $user->id === $wishlistItem->user_id;
+        return $user->id === $item->user_id;
     }
 
-    public function delete(User $user, WishlistItem $wishlistItem)
+    public function delete(User $user, WishlistItem $item)
     {
-        return $user->id === $wishlistItem->user_id;
+        return $user->id === $item->user_id;
     }
 }

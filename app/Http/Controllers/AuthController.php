@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rule;
 
 class AuthController extends Controller
@@ -38,10 +38,12 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
+        $token = $user->createToken('auth_token')->plainTextToken;
+
         return response()->json([
-            'user' => $user,
-            'token' => $user->createToken('auth_token')->plainTextToken
-        ], 201);
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+        ]);
     }
 
     public function login(Request $request)
@@ -53,15 +55,15 @@ class AuthController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
-            ]);
+        if (! $user || ! Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
+        $token = $user->createToken('auth_token')->plainTextToken;
+
         return response()->json([
-            'user' => $user,
-            'token' => $user->createToken('auth_token')->plainTextToken
+            'access_token' => $token,
+            'token_type' => 'Bearer',
         ]);
     }
 

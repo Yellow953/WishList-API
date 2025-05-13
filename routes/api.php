@@ -12,10 +12,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
 
-    Route::apiResource('wishlist-items', WishlistItemController::class);
-});
-
-
-Route::post('/test', function () {
-    return response()->json(['message' => 'API is working!']);
+    Route::apiResource('wishlist', WishlistItemController::class);
 });
