@@ -27,15 +27,13 @@ class WishlistItemController extends Controller
         return response()->json($wishlistItem, 201);
     }
 
-    public function show(Request $request, WishlistItem $wishlistItem)
+    public function update(Request $request, $id)
     {
-        $this->authorize('view', $wishlistItem);
-        return $wishlistItem;
-    }
+        $wishlistItem = WishlistItem::findOrFail($id);
 
-    public function update(Request $request, WishlistItem $wishlistItem)
-    {
-        $this->authorize('update', $wishlistItem);
+        if ($request->user()->id !== $wishlistItem->user_id) {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
 
         $request->validate([
             'wishText' => 'string|max:255',
@@ -44,13 +42,19 @@ class WishlistItemController extends Controller
 
         $wishlistItem->update($request->only(['wishText', 'isComplete']));
 
-        return response()->json($wishlistItem);
+        return response()->json(['message' => 'Wishlist Item deleted successfully'], 200);
     }
 
-    public function destroy(Request $request, WishlistItem $wishlistItem)
+    public function destroy(Request $request, $id)
     {
-        $this->authorize('delete', $wishlistItem);
+        $wishlistItem = WishlistItem::findOrFail($id);
+
+        if ($request->user()->id !== $wishlistItem->user_id) {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
+
         $wishlistItem->delete();
-        return response()->json(null, 204);
+
+        return response()->json(['message' => 'Wishlist Item deleted successfully'], 204);
     }
 }
